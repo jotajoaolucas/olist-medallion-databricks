@@ -1,0 +1,324 @@
+{
+  "datasets": [
+    {
+      "name": "0bb333e3",
+      "displayName": "satisfação_x_entrega",
+      "queryLines": [
+        "SELECT status_entrega, nota_media, qtd_avaliacoes\r\n",
+        "FROM olist_project.gold.satisfacao_entrega;"
+      ]
+    },
+    {
+      "name": "7a61853f",
+      "displayName": "top_vendedores",
+      "queryLines": [
+        "SELECT seller_id, seller_state, receita_total, qtd_pedidos, nota_media\r\n",
+        "FROM olist_project.gold.ranking_vendedores\r\n",
+        "ORDER BY receita_total DESC\r\n",
+        "LIMIT 10;"
+      ]
+    },
+    {
+      "name": "43415db5",
+      "displayName": "performance_de_entrega",
+      "queryLines": [
+        "SELECT mes, tempo_medio_entrega_dias, pct_entregas_no_prazo, pct_entregas_atrasadas\r\n",
+        "FROM olist_project.gold.performance_entrega_mensal\r\n",
+        "ORDER BY mes;"
+      ]
+    },
+    {
+      "name": "b322635f",
+      "displayName": "receita_por_estado",
+      "queryLines": [
+        "SELECT estado, receita_total, qtd_pedidos, ticket_medio\r\n",
+        "FROM olist_project.gold.receita_por_estado\r\n",
+        "ORDER BY receita_total DESC;"
+      ]
+    },
+    {
+      "name": "9fa781d1",
+      "displayName": "receita_mensal",
+      "queryLines": [
+        "SELECT \r\n",
+        "    mes, \r\n",
+        "    receita_produtos, \r\n",
+        "    receita_frete, \r\n",
+        "    qtd_pedidos, \r\n",
+        "    variacao_pct\r\n",
+        "FROM olist_project.gold.receita_mensal\r\n",
+        "ORDER BY mes;"
+      ]
+    },
+    {
+      "name": "e88a0f74",
+      "displayName": "receita_mes_atual",
+      "queryLines": [
+        "SELECT \r\n",
+        "    mes,\r\n",
+        "    receita_produtos,\r\n",
+        "    variacao_pct,\r\n",
+        "    qtd_pedidos\r\n",
+        "FROM olist_project.gold.receita_mensal where mes not in ('2018-09')\r\n",
+        "ORDER BY mes DESC\r\n",
+        "LIMIT 1;"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "691bc8c3",
+      "displayName": "Visão Geral",
+      "layout": [
+        {
+          "widget": {
+            "name": "receita-mensal",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9fa781d1",
+                  "fields": [
+                    {
+                      "name": "sum(receita_produtos)",
+                      "expression": "SUM(`receita_produtos`)"
+                    },
+                    {
+                      "name": "mes",
+                      "expression": "`mes`"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`mes` IS NULL OR `mes` NOT IN ('2016-09', '2016-10', '2016-12', '2018-09')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Receita Mensal"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(receita_produtos)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "mes",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true,
+                  "text": {
+                    "fieldName": "sum(receita_produtos)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "USD",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "max",
+                        "places": 2
+                      },
+                      "significantFigures": {
+                        "type": "all"
+                      }
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 12,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "18ebc222",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# 📊 Olist - Visão Geral do Negócio\n",
+                "\n",
+                "Dashboard executivo construído sobre pipeline Medallion (Bronze/Silver/Gold) no Databricks,<br>usando o dataset público Olist E-commerce (Kaggle)."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "receita-do-mes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "9fa781d1",
+                  "fields": [
+                    {
+                      "name": "sum(receita_produtos)",
+                      "expression": "SUM(`receita_produtos`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Receita do Mês Atual*"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(receita_produtos)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "variacao-vs-mes-anterior",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e88a0f74",
+                  "fields": [
+                    {
+                      "name": "sum(variacao_pct)",
+                      "expression": "SUM(`variacao_pct`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Variação vs Mês Anterior"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(variacao_pct)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "rules": [
+                      {
+                        "condition": {
+                          "operator": ">="
+                        },
+                        "color": "#00A972"
+                      }
+                    ]
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "pedidos-no-mes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "e88a0f74",
+                  "fields": [
+                    {
+                      "name": "sum(qtd_pedidos)",
+                      "expression": "SUM(`qtd_pedidos`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Pedidos no Mês"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(qtd_pedidos)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 2,
+            "width": 4,
+            "height": 4
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

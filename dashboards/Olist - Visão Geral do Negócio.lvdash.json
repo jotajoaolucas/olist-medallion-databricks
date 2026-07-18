@@ -61,7 +61,7 @@
         "    qtd_pedidos\r\n",
         "FROM olist_project.gold.receita_mensal where mes not in ('2018-09')\r\n",
         "ORDER BY mes DESC\r\n",
-        "LIMIT 1;"
+        "LIMIT 1; "
       ]
     }
   ],
